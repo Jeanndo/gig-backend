@@ -3,8 +3,20 @@ import mongoose from "mongoose";
 const vitalSchema = new mongoose.Schema({
   description: {
     type: String,
+    trim: true,
   },
-
+  patientName: {
+    type: String,
+  },
+  patientEmail: {
+    type: String,
+  },
+  patientPhone: {
+    type: String,
+  },
+  payementStatus: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

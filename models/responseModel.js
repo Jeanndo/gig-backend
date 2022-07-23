@@ -4,6 +4,9 @@ const responseSchema = new mongoose.Schema({
     type: String,
     required: [true, "Response is require"],
   },
+  patientPhone: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

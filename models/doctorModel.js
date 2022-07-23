@@ -39,6 +39,9 @@ const doctorSchema = new mongoose.Schema({
   dob: {
     type: Date,
   },
+  role: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

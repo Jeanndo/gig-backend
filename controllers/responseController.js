@@ -1,9 +1,19 @@
 import Response from "./../models/responseModel.js";
 import Doctor from "./../models/doctorModel.js";
+import Patient from "./../models/patientModel.js";
+import dotenv from "dotenv";
+import twilio from "twilio";
+
+dotenv.config();
+
+var accountSid = process.env.TWILIO_ACCOUNT_SID;
+var authToken = process.env.TWILIO_AUTH_TOKEN;
+
+const client = twilio(accountSid, authToken);
 
 export const createResponse = async (req, res) => {
   try {
-    const { response, email } = req.body;
+    const { response, email, patientPhone } = req.body;
     const doctor = await Doctor.findOne({ email });
 
     if (!doctor) {
@@ -13,7 +23,19 @@ export const createResponse = async (req, res) => {
       });
     }
 
-    const newResponse = await Response.create({ response });
+    const patient = await Patient.findOne({ phone: patientPhone });
+    const newResponse = await Response.create({
+      response,
+      patientPhone: patientPhone,
+    });
+
+    const message = `Dear ${patient.firstName},\n You have been responded you can login to see your result here https://online-treatment.netlify.app/pages/login.html`;
+    await client.messages.create({
+      body: message,
+      from: process.env.CONTACT,
+      to: process.env.RECIEVER,
+    });
+
     res.status(200).json({
       status: "success",
       response: newResponse,

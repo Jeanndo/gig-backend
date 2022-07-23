@@ -18,6 +18,7 @@ export const payment = async (req, res) => {
     );
 
     const { amount, phone } = req.body;
+    console.log("phone", req.body);
 
     const patient = await Patient.findOne({ phone });
 
@@ -58,5 +59,6 @@ export const payment = async (req, res) => {
       status: "error",
       message: "Error while paying",
     });
+    // console.error(error);
   }
 };

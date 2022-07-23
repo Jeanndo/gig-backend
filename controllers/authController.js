@@ -1,6 +1,10 @@
 import Patient from "./../models/patientModel.js";
 import Doctor from "./../models/doctorModel.js";
 import jwt from "jsonwebtoken";
+import bscript from "bcryptjs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRETE, {
@@ -11,8 +15,7 @@ const signToken = (id) => {
 export const signup = async (req, res) => {
   try {
     const { email, role } = req.body;
-    console.log("registration", req.body);
-    if (role === "patient") {
+    if (role === process.env.IS_PATIENT) {
       const patient = await Patient.findOne({ email: email });
 
       if (patient) {
@@ -33,8 +36,12 @@ export const signup = async (req, res) => {
         Insurance: req.body.Insurance,
         sex: req.body.sex,
         dob: req.body.dob,
+        role: req.body.role,
         email: req.body.email,
-        password: req.body.password,
+        password: await bscript.hash(
+          req.body.password,
+          Number(process.env.SALT)
+        ),
       });
 
       res.status(201).json({
@@ -44,7 +51,7 @@ export const signup = async (req, res) => {
           patient: newPatient,
         },
       });
-    } else if (role === "doctor") {
+    } else if (role === process.env.IS_DOCTOR) {
       const doctor = await Doctor.findOne({ email: email });
 
       if (doctor) {
@@ -64,8 +71,12 @@ export const signup = async (req, res) => {
         NationalId: req.body.NationalId,
         sex: req.body.sex,
         dob: req.body.dob,
+        role: req.body.role,
         email: req.body.email,
-        password: req.body.password,
+        password: await bscript.hash(
+          req.body.password,
+          Number(process.env.SALT)
+        ),
       });
 
       res.status(201).json({
@@ -89,7 +100,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password, role } = req.body;
-    if (role === "patient") {
+    if (role === process.env.IS_PATIENT) {
       if (!email || !password) {
         return res.status(400).json({
           status: "fail",
@@ -99,7 +110,7 @@ export const login = async (req, res) => {
 
       const patient = await Patient.findOne({ email });
 
-      if (!patient || !(password === patient.password)) {
+      if (!patient || !(await bscript.compare(password, patient.password))) {
         return res
           .status(401)
           .json({ status: "fail", message: "Incorrect Email or Password" });
@@ -111,7 +122,7 @@ export const login = async (req, res) => {
         token,
         patient,
       });
-    } else if (role === "doctor") {
+    } else if (role === process.env.IS_DOCTOR) {
       if (!email || !password) {
         return res.status(400).json({
           status: "fail",
@@ -121,7 +132,7 @@ export const login = async (req, res) => {
 
       const doctor = await Doctor.findOne({ email });
 
-      if (!doctor || !(password === doctor.password)) {
+      if (!doctor || !(await bscript.compare(password, doctor.password))) {
         return res
           .status(401)
           .json({ status: "fail", message: "Incorrect Email or Password" });

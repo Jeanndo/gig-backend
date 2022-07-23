@@ -44,6 +44,9 @@ const patientSchema = new mongoose.Schema({
   dob: {
     type: Date,
   },
+  role: {
+    type: String,
+  },
   status: {
     type: Boolean,
     default: false,
