@@ -1,7 +1,11 @@
 import express from "express";
-import { createResponse } from "./../../controllers/responseController.js";
+import {
+  createResponse,
+  getAllResponses,
+} from "./../../controllers/responseController.js";
 
 const router = express.Router();
 
-router.post("/", createResponse);
+router.route("/").post(createResponse).get(getAllResponses);
+
 export default router;

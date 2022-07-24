@@ -47,3 +47,19 @@ export const createResponse = async (req, res) => {
     });
   }
 };
+
+export const getAllResponses = async (req, res) => {
+  try {
+    const allResponses = await Response.find();
+
+    res.status(200).json({
+      status: "success",
+      allResponses,
+    });
+  } catch (error) {
+    res.status(5000).json({
+      message: "Error while getting all responses",
+      err: error.stack,
+    });
+  }
+};
